@@ -161,8 +161,8 @@ command:build_agent_bundles() {
 
 
 FINAL_IMAGE="inaetics/cagent_builder"
-BUILDER_UID=$( id -u )
-BUILDER_GID=$( id -g )
+BUILDER_UID="${BUILDER_UID:-$( id -u )}"
+BUILDER_GID="${BUILDER_GID:-$( id -g )}"
 USER_IDS="-e BUILDER_UID=$( id -u ) -e BUILDER_GID=$( id -g )"
 
 CURRENT_DIR=$PWD
