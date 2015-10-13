@@ -118,7 +118,7 @@ command:make_bundles() {
     echo "include(/usr/buildroot-2015.05/output/host/usr/share/buildroot/toolchainfile.cmake)" >> ./toolchain.cmake
     # Start docker run inaetics/cagent_builder with command to run cmake
     cd ..
-    docker run --rm -v $PWD:/build ${USER_IDS} $FINAL_IMAGE build_bundles
+    docker run --rm -v $PWD:/build ${USER_IDS} $FINAL_IMAGE build_bundles $@
     # Copy the resulting bundles to ...
     cd build
     create_jar_from_bundles
@@ -144,7 +144,7 @@ command:make_node_agent_bundles() {
 command:build_bundles() {
     add_user_in_container
     cd /build/build
-    chpst -u :$BUILDER_UID:$BUILDER_GID cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake -DCELIX_DIR=/usr/buildroot-2015.05/output/target/usr ..
+    chpst -u :$BUILDER_UID:$BUILDER_GID cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake -DCELIX_DIR=/usr/buildroot-2015.05/output/target/usr $@ ..
     chpst -u :$BUILDER_UID:$BUILDER_GID make
 }
 
