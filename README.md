@@ -42,7 +42,7 @@ The celix agent builder is a shell script (cagent_builder.sh) that can be used t
 The shell script uses an inaetics/cagent_builder image that can be generated 
 with the following command:
 	
-	docker build -t inaetics/cagent_builder cagent_builde
+	docker build -t inaetics/cagent_builder cagent_builder
 
 The nice part is that this cagent_builder image is also used to generate the 
 needed shell script. Use the following commands to generate the shell script:

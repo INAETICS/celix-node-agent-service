@@ -53,7 +53,7 @@ command:help() {
             err \"$1\" is not a supported command
             command:help
         elif ! has help $1; then
-            err No help found for \"$1\"
+            err "No help found for \"$1\""
         else
             help:$1
         fi
