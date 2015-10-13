@@ -1,4 +1,4 @@
-# Buildroot INAETICS node-agent-celix
+# Buildroot INAETICS node-agent-celix  [![Build Status](https://travis-ci.org/INAETICS/node-agent-c.svg?branch=buildroot_node)](https://travis-ci.org/INAETICS/node-agent-c)
 This project builds three docker images:
 * buildroot_basic: 
   a ubuntu image that has a buildroot develop environment
