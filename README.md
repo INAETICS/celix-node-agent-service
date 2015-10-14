@@ -42,7 +42,7 @@ The celix agent builder is a shell script (cagent_builder.sh) that can be used t
 The shell script uses an inaetics/cagent_builder image that can be generated 
 with the following command:
 	
-	docker build -t inaetics/cagent_builder cagent_builde
+	docker build -t inaetics/cagent_builder cagent_builder
 
 The nice part is that this cagent_builder image is also used to generate the 
 needed shell script. Use the following commands to generate the shell script:
@@ -58,7 +58,10 @@ The cagent_builder.sh can be invoked with the following commands:
         ./cagent_builder.sh make_node_agent_bundles (Generates bundles every celix-agent needs. 
 ->      Note: The result (bundles with ACE naming convention) are stored in a subdirectory deploy.
 
-	./cagent_builder.sh make_bundles (Generates application bundles. 
+	./cagent_builder.sh make_bundles (Generates application bundles)  
+        or
+	./cagent_builder.sh make_bundles -DMYOPTION=ON (to pass options to the cmake command and build the bundles)
+
         The script is supposed to be called from the application directory that 
         contains the top-level CMakeLists.txt. 
 ->      The result (bundles with ACE naming convention) are stored in a subdirectory deploy.

@@ -53,7 +53,7 @@ command:help() {
             err \"$1\" is not a supported command
             command:help
         elif ! has help $1; then
-            err No help found for \"$1\"
+            err "No help found for \"$1\""
         else
             help:$1
         fi
@@ -85,7 +85,7 @@ command:make_celix_agent() {
 # So alternative solution
     mkdir -p /tmp/minimum_celix 
 #    docker run --rm -v /tmp/minimum_celix:/build ${USER_IDS} inaetics/buildroot_minimum_celix /bin/bash -c "cp /usr/celix-image/rootfs.tar /build"
-    docker run --rm -v /tmp/minimum_celix:/build inaetics/buildroot_minimum_celix chpst -u :$BUILDER_UID:$BUILDER_GID cp /usr/celix-image/rootfs.tar /build
+    docker run --rm --privileged -v /tmp/minimum_celix:/build inaetics/buildroot_minimum_celix chpst -u :$BUILDER_UID:$BUILDER_GID cp /usr/celix-image/rootfs.tar /build
      cat /tmp/minimum_celix/rootfs.tar | docker import - inaetics/celix-agent
 #    rm -rf /tmp/minimum_celix
 }
@@ -118,7 +118,7 @@ command:make_bundles() {
     echo "include(/usr/buildroot-2015.05/output/host/usr/share/buildroot/toolchainfile.cmake)" >> ./toolchain.cmake
     # Start docker run inaetics/cagent_builder with command to run cmake
     cd ..
-    docker run --rm -v $PWD:/build ${USER_IDS} $FINAL_IMAGE build_bundles
+    docker run --rm --privileged -v $PWD:/build ${USER_IDS} $FINAL_IMAGE build_bundles $@
     # Copy the resulting bundles to ...
     cd build
     create_jar_from_bundles
@@ -131,7 +131,7 @@ command:make_node_agent_bundles() {
     rm -rf /tmp/celix_bundles
     mkdir -p /tmp/celix_bundles
 #    docker run -v /tmp/celix_bundles:/build ${USER_IDS} ${FINAL_IMAGE} /bin/bash -c "cp /usr/buildroot-2015.05/output/target/usr/share/celix/bundles/*.zip /build/."
-    docker run --rm -v /tmp/celix_bundles:/build ${USER_IDS} ${FINAL_IMAGE} build_agent_bundles 
+    docker run --rm --privileged -v /tmp/celix_bundles:/build ${USER_IDS} ${FINAL_IMAGE} build_agent_bundles 
     cd /tmp/celix_bundles
     create_jar_from_bundles
     cd ${CURRENT_DIR}
@@ -144,7 +144,7 @@ command:make_node_agent_bundles() {
 command:build_bundles() {
     add_user_in_container
     cd /build/build
-    chpst -u :$BUILDER_UID:$BUILDER_GID cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake -DCELIX_DIR=/usr/buildroot-2015.05/output/target/usr ..
+    chpst -u :$BUILDER_UID:$BUILDER_GID cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake -DCELIX_DIR=/usr/buildroot-2015.05/output/target/usr $@ ..
     chpst -u :$BUILDER_UID:$BUILDER_GID make
 }
 
@@ -161,8 +161,8 @@ command:build_agent_bundles() {
 
 
 FINAL_IMAGE="inaetics/cagent_builder"
-BUILDER_UID=$( id -u )
-BUILDER_GID=$( id -g )
+BUILDER_UID="${BUILDER_UID:-$( id -u )}"
+BUILDER_GID="${BUILDER_GID:-$( id -g )}"
 USER_IDS="-e BUILDER_UID=$( id -u ) -e BUILDER_GID=$( id -g )"
 
 CURRENT_DIR=$PWD
@@ -184,7 +184,7 @@ case $1 in
           command:$1 "${@:2}" # skip first element array
           exit $?
       else
-          docker run --rm -i -t -v $PWD:/build --entrypoint=$1 inaetics/cagent_builder ${@:2}
+          docker run --rm --privileged -i -t -v $PWD:/build --entrypoint=$1 inaetics/cagent_builder ${@:2}
       fi
       ;;
 esac
