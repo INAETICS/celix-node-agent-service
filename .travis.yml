@@ -7,7 +7,14 @@ services:
 
 before_install:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker build -t inaetics/buildroot_minimum_celix buildroot_minimum_celix
+  - docker build -t inaetics/cagent_builder cagent_builder
+  - docker run bpetri/cagent_builder build_script > cagent_builder.sh && chmod +x cagent_builder.sh
 
 install:
-  - docker build -t inaetics/buildroot_minimum_celix buildroot_minimum_celix && docker push inaetics/buildroot_minimum_celix
-  - docker build -t inaetics/cagent_builder cagent_builder && docker push inaetics/cagent_builder
+  - ./cagent_builder.sh make_celix_agent
+
+after_success:
+  - docker push inaetics/buildroot_minimum_celix
+  - docker push inaetics/cagent_builder
+  - docker push inaetics/celix_agent
