@@ -17,4 +17,4 @@ install:
 after_success:
   - docker push inaetics/buildroot_minimum_celix
   - docker push inaetics/cagent_builder
-  - docker push inaetics/celix_agent
+  - docker push inaetics/celix-agent
