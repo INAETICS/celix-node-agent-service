@@ -22,4 +22,4 @@ chmod +x cagent_builder.sh
 git clone https://github.com/INAETICS/node-wiring-c.git
 cd node-wiring-c; ../cagent_builder.sh make_bundles
 # Example how to create a bundle
-cd example_bundle; ../cagent_builder.sh make_bundles
+# cd example_bundle; ../cagent_builder.sh make_bundles

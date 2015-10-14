@@ -58,7 +58,10 @@ The cagent_builder.sh can be invoked with the following commands:
         ./cagent_builder.sh make_node_agent_bundles (Generates bundles every celix-agent needs. 
 ->      Note: The result (bundles with ACE naming convention) are stored in a subdirectory deploy.
 
-	./cagent_builder.sh make_bundles (Generates application bundles. 
+	./cagent_builder.sh make_bundles (Generates application bundles)  
+        or
+	./cagent_builder.sh make_bundles -DMYOPTION=ON (to pass options to the cmake command and build the bundles)
+
         The script is supposed to be called from the application directory that 
         contains the top-level CMakeLists.txt. 
 ->      The result (bundles with ACE naming convention) are stored in a subdirectory deploy.
