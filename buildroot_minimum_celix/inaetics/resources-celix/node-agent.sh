@@ -14,9 +14,9 @@ cd $(dirname $0)
 PROVISIONING_NAMESPACE="/inaetics/node-provisioning-service"
 MAX_RETRY_ETCD_REPO=10
 RETRY_ETCD_REPO_INTERVAL=5
-UPDATE_INTERVAL=10
-RETRY_INTERVAL=5
-ETCD_TTL_INTERVALL=$((UPDATE_INTERVAL + 5))
+UPDATE_INTERVAL=60
+RETRY_INTERVAL=20
+ETCD_TTL_INTERVALL=$((UPDATE_INTERVAL + 15))
 LOG_DEBUG=true
 
 #
@@ -104,7 +104,7 @@ start_agent () {
   cp /tmp/config.properties.base ${workdir}/config.properties
   DISCOVERY_ETCD_SERVER_IP=`echo $ETCDCTL_PEERS | cut -d ':' -f 1`
   DISCOVERY_ETCD_SERVER_PORT=`echo $ETCDCTL_PEERS | cut -d ':' -f 2`
-
+ 
   echo "deployment_admin_identification=${agent_id}" >> ${workdir}/config.properties
   echo "deployment_admin_url=${current_provisioning_service}" >> ${workdir}/config.properties
   echo "RSA_IP=$agent_ipv4" >> ${workdir}/config.properties
@@ -116,7 +116,6 @@ start_agent () {
   echo "LOGHELPER_ENABLE_STDOUT_FALLBACK=true" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ZONE_IDENTIFIER=zone1" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ETCD_SERVER_IP=`echo $DISCOVERY_ETCD_SERVER_IP`" >> ${workdir}/config.properties
-  echo "NODE_DISCOVERY_ETCD_SERVER_PORT=`echo $DISCOVERY_ETCD_SERVER_PORT`" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ETCD_ROOT_PATH=inaetics/wiring" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_ADDRESS=$agent_ipv4" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_PORT=8888" >> ${workdir}/config.properties
@@ -166,7 +165,7 @@ function store_etcd_data(){
 stop_agent () {
   etcd/rm "/inaetics/node-agent-service/$agent_id"
   if [ "$agent_pid" != "" ]; then
-      kill -SIGINT $agent_pid
+    kill -SIGTERM $agent_pid
       wait $agent_pid
       agent_pid=""
       rm -fr /tmp/workdir
@@ -176,7 +175,6 @@ stop_agent () {
 clean_up () {
     echo "Running cleanup.."
     stop_agent
-    rm /tmp/health
     exit 0
 }
 
@@ -205,7 +203,7 @@ fi
 
 agent_ipv4=$2
 if [ "$agent_ipv4" == "" ]; then
-  # get IP
+  # get IP 
   agent_ipv4=`hostname -i`
 fi
 if [ "$agent_ipv4" == "" ]; then
@@ -219,19 +217,8 @@ if [ "$agent_port" == "" ]; then
   agent_port=8080
 fi
 
-# we are healthy, used by kubernetes
-echo ok > /tmp/health
-
 while true; do
 
-  # we are not healthy anymore when agent_pid is set but process is not running
-  if [ "$agent_pid" != "" ] && [ ! -d "/proc/$agent_pid" ] && [ ! -e /tmp/disable_healthcheck ]; then
-    # clean up and exit loop
-    echo "agent process not running anymore, cleaning up..."
-    clean_up
-    break
-  fi
-  
   locate_provisioning_service
   if [ $? -ne 0 ]; then
     echo "Locating provisioning services in etcd failed. Keeping current state.." 1>&2
