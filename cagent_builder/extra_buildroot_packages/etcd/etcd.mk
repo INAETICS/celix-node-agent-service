@@ -3,7 +3,7 @@
 ## ETCD
 #
 ##############################################################
-ETCD_VERSION=v0.4.6
+ETCD_VERSION=v2.0.13
 
 #define ETCD_EXTRACT_CMDS
 #	unzip $(DL_DIR)/$(ETCD_SOURCE) -d $(@D)
