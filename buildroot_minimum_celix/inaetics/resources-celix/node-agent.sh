@@ -116,6 +116,7 @@ start_agent () {
   echo "LOGHELPER_ENABLE_STDOUT_FALLBACK=true" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ZONE_IDENTIFIER=zone1" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ETCD_SERVER_IP=`echo $DISCOVERY_ETCD_SERVER_IP`" >> ${workdir}/config.properties
+  echo "NODE_DISCOVERY_ETCD_SERVER_PORT=`echo $DISCOVERY_ETCD_SERVER_PORT`" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_ETCD_ROOT_PATH=inaetics/wiring" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_ADDRESS=$agent_ipv4" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_PORT=8888" >> ${workdir}/config.properties
@@ -165,7 +166,7 @@ function store_etcd_data(){
 stop_agent () {
   etcd/rm "/inaetics/node-agent-service/$agent_id"
   if [ "$agent_pid" != "" ]; then
-    kill -SIGTERM $agent_pid
+    kill -SIGINT $agent_pid
       wait $agent_pid
       agent_pid=""
       rm -fr /tmp/workdir
@@ -175,6 +176,7 @@ stop_agent () {
 clean_up () {
     echo "Running cleanup.."
     stop_agent
+    rm /tmp/health
     exit 0
 }
 
@@ -217,7 +219,21 @@ if [ "$agent_port" == "" ]; then
   agent_port=8080
 fi
 
+
+# we are healthy, used by kubernetes
+echo ok > /tmp/health
+
+
 while true; do
+
+
+  # we are not healthy anymore when agent_pid is set but process is not running
+  if [ "$agent_pid" != "" ] && [ ! -d "/proc/$agent_pid" ] && [ ! -e /tmp/disable_healthcheck ]; then
+    # clean up and exit loop
+    echo "agent process not running anymore, cleaning up..."
+    clean_up
+    break
+  fi
 
   locate_provisioning_service
   if [ $? -ne 0 ]; then
