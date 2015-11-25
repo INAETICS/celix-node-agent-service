@@ -73,6 +73,7 @@ agent_pid=""
 #    1, if etcd lookup fails
 locate_provisioning_service () {
   located_provisioning_service=""
+
   local provisioning_services=($(etcd/values $PROVISIONING_NAMESPACE $ETCD_HOST))
   if [ $? -ne 0 ]; then
     return 1
@@ -90,6 +91,26 @@ locate_provisioning_service () {
   fi
   return 0
 }
+
+
+#if a dir /var/bundles exists. add all bundles (.zip) to the autostart
+setup_standalone() {
+    props=$1
+    
+    if [ -d /var/standalone ] ; then
+        initial=`cat ${props} | grep "cosgi.auto.start.1="`
+        echo -n ${initial} >> ${props}
+        for bundle in `ls -1 /var/standalone/bundles` ; do
+            echo -n " /var/bundles/${bundle}" >> ${props}
+        done
+        echo "" >> ${props}
+    else 
+        echo "Error. Exptected a /var/standalone dir for a standalone cagent!"
+        exit 1
+    fi
+
+}
+
 
 start_agent () {
   DEPLOYMENT_ID=${agent_id}
@@ -120,7 +141,13 @@ start_agent () {
   echo "NODE_DISCOVERY_ETCD_ROOT_PATH=inaetics/wiring" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_ADDRESS=$agent_ipv4" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_PORT=8888" >> ${workdir}/config.properties
-_log "CELIX Configuration"
+  
+  if [ -d /var/standalone ] ; then
+      setup_standalone ${workdir}/config.properties
+  fi
+
+
+  _log "CELIX Configuration"
   _log "================================================="
   _log "RSA IP s		   : $agent_ipv4"
   _log "DISCOVERY_ETCD_SERVER_IP   : $DISCOVERY_ETCD_SERVER_IP"
@@ -235,30 +262,37 @@ while true; do
     break
   fi
 
-  locate_provisioning_service
-  if [ $? -ne 0 ]; then
-    echo "Locating provisioning services in etcd failed. Keeping current state.." 1>&2
-  else
-    if [ "$current_provisioning_service" != "$located_provisioning_service" ]; then
-      echo "Provisioning service changed: $current_provisioning_service -> $located_provisioning_service"
-      current_provisioning_service=$located_provisioning_service
-
-      if [ "$current_provisioning_service" == "" ]; then
-        if [ "$agent_pid" != "" ]; then
-          echo "Stopping agent.."
-          stop_agent
-        fi
+  if [ -d /var/standalone ] ; then
+      if [ "$agent_pid" = "" ] ; then
+          echo "Starting standalone agent..."
+          start_agent
+      fi
+  else 
+      locate_provisioning_service
+      if [ $? -ne 0 ]; then
+        echo "Locating provisioning services in etcd failed. Keeping current state.." 1>&2
       else
-        if [ "$agent_pid" != "" ]; then
-          echo "Restarting agent..."
-          stop_agent
-          start_agent
-        else
-          echo "Starting agent..."
-          start_agent
+        if [ "$current_provisioning_service" != "$located_provisioning_service" ]; then
+          echo "Provisioning service changed: $current_provisioning_service -> $located_provisioning_service"
+          current_provisioning_service=$located_provisioning_service
+
+          if [ "$current_provisioning_service" == "" ]; then
+            if [ "$agent_pid" != "" ]; then
+              echo "Stopping agent.."
+              stop_agent
+            fi
+          else
+            if [ "$agent_pid" != "" ]; then
+              echo "Restarting agent..."
+              stop_agent
+              start_agent
+            else
+              echo "Starting agent..."
+              start_agent
+            fi
+          fi
         fi
       fi
-    fi
   fi
 
   if [ "$agent_pid" == "" ]; then
