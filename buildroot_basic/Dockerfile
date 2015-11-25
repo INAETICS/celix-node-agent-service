@@ -36,11 +36,6 @@ RUN apt-get update && apt-get install -y \
 	libxt-dev \
         runit \
         && apt-get clean 
-
-RUN apt-get update && apt-get install -y \
-    libncurses5 \
-    && apt-get clean
-
 # Update CMAKE
 RUN mkdir /cmake && cd /cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz && tar xf cmake-3.2.2.tar.gz && cd cmake-3.2.2 && ./configure --prefix=/usr && make && make install
 
