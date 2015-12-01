@@ -31,7 +31,7 @@ create_jar_from_bundles() {
         version=`cat META-INF/MANIFEST.MF | grep 'Bundle-Version' | cut -d' ' -f2 | tr -d '\n' | tr -d '\r'`
         bundleFile="${symbolicName}-${version}.jar"
         echo "BUNDLEFILE is ${bundleFile}"
-        jar cfm ../${bundleFile} META-INF/MANIFEST.MF lib*.so
+        jar cfm ../${bundleFile} META-INF/MANIFEST.MF *
         cd ..
         rm -rf t
     done

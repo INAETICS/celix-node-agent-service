@@ -39,6 +39,9 @@ RUN apt-get update && apt-get install -y \
 # Update CMAKE
 RUN mkdir /cmake && cd /cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz && tar xf cmake-3.2.2.tar.gz && cd cmake-3.2.2 && ./configure --prefix=/usr && make && make install
 
+# Get CppUtest 
+RUN mkdir /cpputest && cd  /cpputest &&  wget https://github.com/cpputest/cpputest.github.io/blob/master/releases/cpputest-3.7.1.tar.gz?raw=true -O cpputest.tgz && tar xf cpputest.tgz && cd cpputest-3.7.1 && ./configure --prefix=/usr && make && sudo make install
+
 #Download and install the latest version of Docker (You need to be the same version to use this Dockerfile)
 RUN wget -qO- https://get.docker.com/ | sh
 
@@ -54,47 +57,11 @@ RUN wget http://git.buildroot.net/buildroot/snapshot/buildroot-2015.05.tar.gz &&
 #Add missing packages to the buildroot environment
 ADD extra_buildroot_packages/etcd /usr/buildroot-2015.05/package/etcd
  
- 
-#&& \
-#	wget http://www.eu.apache.org/dist/felix/org.apache.felix.main.distribution-5.2.0.tar.gz  && \
-#	tar -xf org.apache.felix.main.distribution-5.2.0.tar.gz && \
-#	wget http://www.eu.apache.org/dist/ace/apache-ace-2.0.1/apache-ace-2.0.1-bin.zip && \
-#	unzip apache-ace-2.0.1-bin.zip 
-
 #ZEROMQ 3.2.5 has to be used instead of the default 4.x
 RUN sed -i -e 's/ZEROMQ_VERSION.*/ZEROMQ_VERSION = 3.2.5/' /usr/buildroot-2015.05/package/zeromq/zeromq.mk && rm -f /usr/buildroot-2015.05/package/zeromq/zeromq.hash && rm -f /usr/buildroot-2015.05/package/zeromq/*patch
 
-#Let's begin with Apache Celix
-
-#Copy the configuration file of Apache Celix in Buildroot and create a small base of the future image with buildroot and decompress it
-
-#RUN make
-
-#WORKDIR /usr/buildroot-2015.05/output/images
-#RUN mkdir /usr/celix-image && \
-#    cp rootfs.tar /usr/celix-image/
-
-#RUN echo "cosgi.auto.start.1= /usr/share/celix/bundles/deployment_admin.zip /usr/share/celix/bundles/log_service.zip /usr/share/celix/bundles/log_writer.zip /usr/share/celix/bundles/remote_shell.zip /usr/share/celix/bundles/shell.zip /usr/share/celix/bundles/shell_tui.zip" > /usr/buildroot-2015.05/output/images/usr/bin/config.properties
-#Create the app-builder image
 #Copy the configuration file of the app-builder in Buildroot and create a small base of the future image with buildroot and decompress it
 ADD buildroot-configure-app-builder/.config /usr/buildroot-2015.05/
 WORKDIR /usr/buildroot-2015.05
 
 RUN make
-
-#WORKDIR /usr/buildroot-2015.05/output/images
-#RUN mkdir /usr/app-builder-image && \
-#    cp rootfs.tar /usr/app-builder-image/
-
-#When the builder image is launch, it creates the docker images automatically that you will be able to see by running the command : docker images
-
-#ENTRYPOINT for i in `seq 0 100`; do sudo mknod -m0660 /dev/loop$i b 7 $i; done && \
-#	/bin/bash inaetics/entrypoint.sh
-#
-#service docker start && \
-#	docker import - inaetics/celix-agent < /usr/celix-image/rootfs.tar &&\
-#	/bin/bash 
-
-
-#ENV http_proxy=""
-#ENV https_proxy=""
