@@ -65,6 +65,8 @@ usage: docker run inaetics/cagent_builder <command> <args> or
 Built-in commands cagent_builder.sh:
      make_bundles	     - builds all bundles from the current directory
      make_celix_agent        - builds a minimum celix docker image
+     make_server_agent       - build a server docker image  with dnsmasq
+
      make_node_agent_bundles - builds set of bundles needed in every celix agent
 
 Built-in commands for "docker run inaetics/cagent_builder":
@@ -90,6 +92,18 @@ command:make_celix_agent() {
 #    rm -rf /tmp/minimum_celix
 }
 
+# The following commands are running on the host, so outside the cagent_builder container
+command:make_server_agent() {
+# Create the celix-agent, following should work but gives an unexpected EOF error in the docker daemon
+#docker run --name minimum_celix inaetics/buildroot_minimum_celix 
+#docker export minimum_celix | tar x usr/celix-image/rootfs.tar | docker import - inaetics/celix-agent 
+# So alternative solution
+    mkdir -p /tmp/minimum_server 
+#    docker run --rm -v /tmp/minimum_celix:/build ${USER_IDS} inaetics/buildroot_minimum_celix /bin/bash -c "cp /usr/celix-image/rootfs.tar /build"
+    docker run --rm --privileged -v /tmp/minimum_server:/build inaetics/buildroot_server chpst -u :$BUILDER_UID:$BUILDER_GID cp /usr/server-image/server_rootfs.tar /build
+     cat /tmp/minimum_server/server_rootfs.tar | docker import - inaetics/server-agent
+#    rm -rf /tmp/minimum_celix
+}
 #command:build() {
 #    docker run -v /tmp/cagent:/build $FINAL_IMAGE /bin/bash -c "cp /usr/celix-image/rootfs.tar /build/."
 #    docker import - inaetics/celix-agent < /tmp/cagent/rootfs.tar
