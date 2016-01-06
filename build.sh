@@ -5,6 +5,7 @@
 # Create a basic buildroot environment
 docker build -t inaetics/buildroot_basic buildroot_basic
 docker build -t inaetics/buildroot_server buildroot_server
+docker build -t inaetics/buildroot_tools buildroot_tools
 # Add the latest Celix development release as package to it
 docker build -t inaetics/buildroot_minimum_celix buildroot_minimum_celix
 # Create the cagent_builder to build the inaetics celix-agent and 

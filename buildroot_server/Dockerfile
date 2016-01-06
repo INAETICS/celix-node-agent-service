@@ -14,12 +14,11 @@ ENV DEBIAN_FRONTEND noninteractive
 ADD buildroot-configure-app-builder/.config /usr/buildroot-2015.05/
 
 WORKDIR /usr/buildroot-2015.05
+ADD resources/start_nfs.sh /usr/buildroot-2015.05/output/target/opt/start_nfs.sh
 
-RUN make dnsmasq
 RUN make 
 
 WORKDIR /usr/buildroot-2015.05/output/images
-
 
 RUN mkdir /usr/server-image && \
     cp rootfs.tar /usr/server-image/server_rootfs.tar

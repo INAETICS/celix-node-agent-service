@@ -111,6 +111,25 @@ command:make_server_agent() {
 ##    docker import - inaetics/celix-agent < /usr/celix-image/rootfs.tar
 #}
 
+# The following commands are running on the host, so outside the cagent_builder container
+command:make_tools_agent() {
+# Create the celix-agent, following should work but gives an unexpected EOF error in the docker daemon
+#docker run --name minimum_celix inaetics/buildroot_minimum_celix 
+#docker export minimum_celix | tar x usr/celix-image/rootfs.tar | docker import - inaetics/celix-agent 
+# So alternative solution
+    mkdir -p /tmp/minimum_server 
+#    docker run --rm -v /tmp/minimum_celix:/build ${USER_IDS} inaetics/buildroot_minimum_celix /bin/bash -c "cp /usr/celix-image/rootfs.tar /build"
+    docker run --rm --privileged -v /tmp/minimum_server:/build inaetics/buildroot_tools chpst -u :$BUILDER_UID:$BUILDER_GID cp /usr/tools-image/rootfs.tar /build
+     cat /tmp/minimum_server/rootfs.tar | docker import - inaetics/tools-agent
+#    rm -rf /tmp/minimum_celix
+}
+#command:build() {
+#    docker run -v /tmp/cagent:/build $FINAL_IMAGE /bin/bash -c "cp /usr/celix-image/rootfs.tar /build/."
+#    docker import - inaetics/celix-agent < /tmp/cagent/rootfs.tar
+##    service docker start
+##    docker import - inaetics/celix-agent < /usr/celix-image/rootfs.tar
+#}
+
 help:make_bundles() {
     echo "Command has to be run in top-level bundle directory"
     echo "This directory has to contain a CMakeLists.txt"
