@@ -7,19 +7,19 @@ ENV DEBIAN_FRONTEND noninteractive
 #ENV https_proxy=http://10.160.64.104:8080
 
 #Download all the packages needed
-RUN echo 'source "package/celix/Config.in"' >> /usr/buildroot-2015.05/Config.in &&\
+RUN echo 'source "package/celix/Config.in"' >> /usr/buildroot-2016.02/Config.in &&\
         wget https://github.com/apache/celix/archive/develop.tar.gz 
 
 #Add missing packages to the buildroot environment
-ADD extra_buildroot_packages/celix /usr/buildroot-2015.05/package/celix
+ADD extra_buildroot_packages/celix /usr/buildroot-2016.02/package/celix
 
-WORKDIR /usr/buildroot-2015.05
-ADD inaetics/resources-celix /usr/buildroot-2015.05/output/target/tmp
+WORKDIR /usr/buildroot-2016.02
+ADD inaetics/resources-celix /usr/buildroot-2016.02/output/target/tmp
 
 RUN make celix
 RUN make 
 
-WORKDIR /usr/buildroot-2015.05/output/images
+WORKDIR /usr/buildroot-2016.02/output/images
 
 
 RUN mkdir /usr/celix-image && \

@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
-	cmake \
+        cmake \
 	git \
 	python \
 	wget \
@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
         runit \
         && apt-get clean 
 # Update CMAKE
-RUN mkdir /cmake && cd /cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz && tar xf cmake-3.2.2.tar.gz && cd cmake-3.2.2 && ./configure --prefix=/usr && make && make install
+RUN mkdir /cmake && cd /cmake && wget http://www.cmake.org/files/v3.4/cmake-3.4.3.tar.gz && tar xf cmake-3.4.3.tar.gz && cd cmake-3.4.3 && ./configure --prefix=/usr && make && make install
 
 # Get CppUtest 
 RUN mkdir /cpputest && cd  /cpputest &&  wget https://github.com/cpputest/cpputest.github.io/blob/master/releases/cpputest-3.7.1.tar.gz?raw=true -O cpputest.tgz && tar xf cpputest.tgz && cd cpputest-3.7.1 && ./configure --prefix=/usr && make && sudo make install
@@ -49,19 +49,19 @@ RUN wget -qO- https://get.docker.com/ | sh
 
 WORKDIR /usr
 
-RUN wget http://git.buildroot.net/buildroot/snapshot/buildroot-2015.05.tar.gz && \
-	tar -xf buildroot-2015.05.tar.gz && \
-        echo "HOST_FAKEROOT_CONF_OPTS += --with-ipc=tcp" >> /usr/buildroot-2015.05/package/fakeroot/fakeroot.mk && \
-        echo 'source "package/etcd/Config.in"' >> /usr/buildroot-2015.05/Config.in
+RUN wget http://git.buildroot.net/buildroot/snapshot/buildroot-2016.02.tar.gz && \
+	tar -xf buildroot-2016.02.tar.gz && \
+        echo "HOST_FAKEROOT_CONF_OPTS += --with-ipc=tcp" >> /usr/buildroot-2016.02/package/fakeroot/fakeroot.mk && \
+        echo 'source "package/etcd/Config.in"' >> /usr/buildroot-2016.02/Config.in
 
 #Add missing packages to the buildroot environment
-ADD extra_buildroot_packages/etcd /usr/buildroot-2015.05/package/etcd
+ADD extra_buildroot_packages/etcd /usr/buildroot-2016.02/package/etcd
  
 #ZEROMQ 3.2.5 has to be used instead of the default 4.x
-RUN sed -i -e 's/ZEROMQ_VERSION.*/ZEROMQ_VERSION = 3.2.5/' /usr/buildroot-2015.05/package/zeromq/zeromq.mk && rm -f /usr/buildroot-2015.05/package/zeromq/zeromq.hash && rm -f /usr/buildroot-2015.05/package/zeromq/*patch
+RUN sed -i -e 's/ZEROMQ_VERSION.*/ZEROMQ_VERSION = 3.2.5/' /usr/buildroot-2016.02/package/zeromq/zeromq.mk && rm -f /usr/buildroot-2016.02/package/zeromq/zeromq.hash && rm -f /usr/buildroot-2016.02/package/zeromq/*patch
 
 #Copy the configuration file of the app-builder in Buildroot and create a small base of the future image with buildroot and decompress it
-ADD buildroot-configure-app-builder/.config /usr/buildroot-2015.05/
-WORKDIR /usr/buildroot-2015.05
+ADD buildroot-configure-app-builder/.config /usr/buildroot-2016.02/
+WORKDIR /usr/buildroot-2016.02
 
 RUN make
