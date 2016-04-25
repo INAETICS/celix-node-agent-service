@@ -141,7 +141,9 @@ start_agent () {
   echo "NODE_DISCOVERY_ETCD_ROOT_PATH=inaetics/wiring" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_ADDRESS=$agent_ipv4" >> ${workdir}/config.properties
   echo "NODE_DISCOVERY_NODE_WA_PORT=8888" >> ${workdir}/config.properties
-  
+  echo "trust.manager.ca.host=`echo $DISCOVERY_ETCD_SERVER_IP`" >> ${workdir}/config.properties
+  echo "trust.manager.ca.port=8080" >> ${workdir}/config.properties
+
   if [ -d /var/standalone ] ; then
       setup_standalone ${workdir}/config.properties
   fi
