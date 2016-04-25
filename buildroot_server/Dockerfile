@@ -7,8 +7,11 @@ ENV DEBIAN_FRONTEND noninteractive
 #ENV https_proxy=http://10.160.64.104:8080
 
 #Download all the packages needed
+RUN apt-get install -y cvs
 
 #Add missing packages to the buildroot environment
+ADD expect /usr/buildroot-2015.05/package/expect
+
 # Copy the configuration file of the app-builder in Buildroot and create 
 # a small base of the future image with buildroot and decompress it
 ADD buildroot-configure-app-builder/.config /usr/buildroot-2015.05/

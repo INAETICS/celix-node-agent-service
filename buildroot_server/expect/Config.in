@@ -1,0 +1,4 @@
+config BR2_PACKAGE_EXPECT
+    bool "expect"
+    help
+      Help for expect
