@@ -9,9 +9,9 @@ ENV DEBIAN_FRONTEND noninteractive
 #Download all the packages needed
 
 #Add missing packages to the buildroot environment
-ADD extra_buildroot_packages/celix /usr/buildroot-2015.05/package/celix
+ADD extra_buildroot_packages/celix /usr/buildroot-2016.02/package/celix
 
-WORKDIR /usr/buildroot-2015.05
+WORKDIR /usr/buildroot-2016.02
 
 RUN rm -rf output/build/celix-Latest; make celix
 
