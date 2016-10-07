@@ -9,5 +9,5 @@ Note that although this can act as a base for small images, debugging can be cum
 Run:
  - `docker build -t inaetics/celix-standalone-fedora-builder celix-standalone-fedora-builder`
  - `mkdir celix-standalone && cd celix-standalone`
- - 'docker run inaetics/celix-standalone-fedora-builder | tar x-`
+ - `docker run inaetics/celix-standalone-fedora-builder | tar x-`
  - `docker build -t celix-standalone .`

@@ -13,8 +13,8 @@ RUN dnf -y install \
     libffi-devel \
     libxml2-devel \
     libuuid-devel \
-    docker \
-    python3
+    python3 \
+    gdb-gdbserver
 
 #jdk installed for jar command
 RUN dnf install -y java-1.8.0-openjdk-devel
@@ -30,14 +30,6 @@ RUN mkdir /root/celix/build
 WORKDIR /root/celix/build
 RUN cmake -DCMAKE_C_FLAGS="-w" ..
 RUN make -j && make install
-
-
-#Create docker image
-RUN mkdir /root/docker-image
-RUN dockerize -n -o /root/docker-image --add-file /usr/lib64/libjansson.so.4 /lib64/libjansson.so.4 /usr/local/bin/celix
-#RUN docker save celix-standalone > /tmp/celix-standalone.tar
-
-#TODO maybe move dokerize to main.sh and also optional strip celix + libs, and/or add gdb-server
 
 #Adding scripts
 WORKDIR /root
