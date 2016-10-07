@@ -1,0 +1,17 @@
+config BR2_PACKAGE_CELIX
+    bool "celix"
+    
+    #Toolchain requirements, note wchar is needed for UTIL_LINUX which is needed for libuuid
+    depends on BR2_TOOLCHAIN_BUILDROOT_CXX 
+    depends on BR2_SHARED_STATIC_LIBS
+
+    #lib requirements
+    select BR2_PACKAGE_UTIL_LINUX
+    select BR2_PACKAGE_UTIL_LINUX_LIBUUID 
+    select BR2_PACKAGE_LIBFFI
+    select BR2_PACKAGE_JANSSON
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBXML2
+    select BR2_PACKAGE_ZLIB
+    help
+      Apache Celix - A OSGi framework for C / C++

@@ -1,2 +1,0 @@
-/tmp/public *(rw,all_squash,sync)
-/tmp/ro *(ro,no_root_squash,async,no_subtree_check)
