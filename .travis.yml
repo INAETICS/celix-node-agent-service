@@ -9,18 +9,15 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq default-jdk
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker build -t inaetics/buildroot_minimum_celix buildroot_minimum_celix
-  - docker build -t inaetics/cagent_builder cagent_builder
-  - docker run inaetics/cagent_builder build_script > cagent_builder.sh && chmod +x cagent_builder.sh
+  - docker build -t inaetics/celix-buildroot-builder celix-buildroot-builder
+  - docker run inaetics/celix-buildroot-builder build_script > builder.sh && chmod +x builder.sh
 
 install:
-  - ./cagent_builder.sh make_celix_agent
-  - ./cagent_builder.sh make_node_agent_bundles
+  - ./builder.sh make_celix_agent
 
 after_success:
   - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" &&
-    docker push inaetics/buildroot_minimum_celix &&
-    docker push inaetics/cagent_builder &&
+    docker push inaetics/celix-buildroot-builder &&
     docker push inaetics/celix-agent &&
     git config --global user.name "Travis CI" && git config --global user.email bpetri@gmx.net &&
     git clone https://github.com/INAETICS/bundles.git $TRAVIS_BUILD_DIR/bundles && cd $TRAVIS_BUILD_DIR/bundles && 
