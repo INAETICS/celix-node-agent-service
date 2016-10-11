@@ -31,14 +31,17 @@ WORKDIR /root/celix/build
 RUN cmake -DCMAKE_C_FLAGS="-w" ..
 RUN make -j && make install
 
-#add gdb-server
-RUN dockerize -n -o /root/docker-image /usr/bin/gdbserver
+ADD jansson /root/jansson
+RUN mkdir /root/jansson/build
+WORKDIR /root/jansson/build
+RUN cmake .. && make -j && make install
+
+#Add Celix, gdb-server &  jansson
+RUN dockerize -n -o /root/docker-image --add-file /usr/lib64/libjansson.so.4 /lib64/libjansson.so.4 /usr/local/bin/celix  /usr/bin/gdbserver /usr/local/bin/jansson-dummy
+RUN rm /root/docker-image/usr/local/bin/jansson-dummy
 
 #add gdb
 #RUN dockerize -n -o /root/docker-image /usr/bin/gdb
-
-#Add Celix + jansson
-RUN dockerize -n -o /root/docker-image --add-file /usr/lib64/libjansson.so.4 /lib64/libjansson.so.4 /usr/local/bin/celix 
 
 #Adding scripts
 WORKDIR /root
