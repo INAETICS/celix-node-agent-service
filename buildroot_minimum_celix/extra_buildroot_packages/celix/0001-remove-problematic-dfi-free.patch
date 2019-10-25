@@ -1,13 +1,13 @@
-diff -rupN celix2/dfi/private/src/json_rpc.c celix/dfi/private/src/json_rpc.c
---- celix2/dfi/private/src/json_rpc.c	2015-12-08 16:05:36.796271781 +0100
-+++ celix/dfi/private/src/json_rpc.c	2015-12-08 15:22:03.697788535 +0100
-@@ -172,7 +172,7 @@ int jsonRpc_call(dyn_interface_type *int
-                     }
-                     if (dynType_descriptorType(typedType) == 't') {
-                         status = jsonSerializer_serializeJson(typedType, (void*) &ptr, &jsonResult);
--                        free(ptr);
-+                        //free(ptr);
-                     } else {
-                         dyn_type *typedTypedType = NULL;
-                         if (status == OK) {
-Binary files celix2/.git/index and celix/.git/index differ
+diff --git a/libs/dfi/src/json_rpc.c b/libs/dfi/src/json_rpc.c
+index 6ff8367..25e1afc 100644
+--- a/libs/dfi/src/json_rpc.c
++++ b/libs/dfi/src/json_rpc.c
+@@ -171,7 +171,7 @@ int jsonRpc_call(dyn_interface_type *intf, void *service, const char *request, c
+ 					}
+ 					if (dynType_descriptorType(typedType) == 't') {
+ 						status = jsonSerializer_serializeJson(typedType, (void*) &ptr, &jsonResult);
+-						free(ptr);
++						//free(ptr);
+ 					} else {
+ 						dyn_type *typedTypedType = NULL;
+ 						if (status == OK) {
