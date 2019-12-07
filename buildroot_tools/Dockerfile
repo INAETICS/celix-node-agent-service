@@ -7,17 +7,17 @@ ENV DEBIAN_FRONTEND noninteractive
 #ENV https_proxy=http://10.160.64.104:8080
 
 #Download all the packages needed
-RUN echo 'source "package/qperf/Config.in"' >> /usr/buildroot-2015.05/Config.in 
+RUN echo 'source "package/qperf/Config.in"' >> /usr/buildroot-2016.02/Config.in 
 
 #Add missing packages to the buildroot environment
-ADD extra_buildroot_packages/qperf /usr/buildroot-2015.05/package/qperf
+ADD extra_buildroot_packages/qperf /usr/buildroot-2016.02/package/qperf
 
-WORKDIR /usr/buildroot-2015.05
+WORKDIR /usr/buildroot-2016.02
 
 RUN make qperf; make iperf; make netperf; make netcat; make tcpdump
 RUN make 
 
-WORKDIR /usr/buildroot-2015.05/output/images
+WORKDIR /usr/buildroot-2016.02/output/images
 
 
 RUN mkdir /usr/tools-image && \
