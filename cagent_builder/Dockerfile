@@ -13,7 +13,7 @@ ADD extra_buildroot_packages/celix /usr/buildroot-2016.02/package/celix
 
 WORKDIR /usr/buildroot-2016.02
 
-RUN rm -rf output/build/celix-Latest; make celix
+RUN rm dl/develop.tar.gz; rm -rf output/build/celix-Latest; make celix
 
 ADD inaetics /usr/inaetics
 
